@@ -1,0 +1,28 @@
+{
+  "id": "site.venaas.diydevices",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "DIY Devices"
+  },
+  "description": {
+    "en": "Add support for DIY smart devices based on REST API and webhooks"
+  },
+  "category": [
+    "tools"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Joachim Venås",
+    "email": "joachimvenaas@gmail.com"
+  }
+}

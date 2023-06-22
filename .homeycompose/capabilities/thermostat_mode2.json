@@ -1,0 +1,136 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Thermostat mode"
+  },
+  "desc": {
+    "en": "Mode of the thermostat"
+  },
+  "values": [
+    {
+      "id": "heat",
+      "title": {
+        "en": "Heat"
+      }
+    },
+    {
+      "id": "cool",
+      "title": {
+        "en": "Cool"
+      }
+    },
+    {
+      "id": "off",
+      "title": {
+        "en": "Off"
+      }
+    }
+  ],
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "$flow": {
+    "triggers": [
+      {
+        "id": "thermostat_mode_changed",
+        "title": {
+          "en": "Thermostat mode has changed"
+        },
+        "args": [
+          {
+            "name": "thermostat_mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heat"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cool"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "thermostat_mode_is",
+        "title": {
+          "en": "Thermostat mode !{{is|is not}}"
+        },
+        "args": [
+          {
+            "name": "thermostat_mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heat"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cool"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "thermostat_mode_set",
+        "title": {
+          "en": "Set the mode"
+        },
+        "args": [
+          {
+            "name": "thermostat_mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heat"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cool"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
