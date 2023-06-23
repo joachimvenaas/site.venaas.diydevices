@@ -39,7 +39,7 @@ class HeatpumpDriver extends Driver {
             address: address.split(':')[0],
             port: address.split(':')[1],
             target_temperature: 23,
-            fan_speed: 1,
+            fan_speed: 'low',
             thermostat_mode: 'off',
             power: 'off',
           },

@@ -194,16 +194,33 @@
   ],
   "capabilities": {
     "fan_speed": {
-      "type": "number",
+      "type": "enum",
       "title": {
         "en": "Fan speed"
       },
-      "uiComponent": "slider",
+      "values": [
+        {
+          "id": "high",
+          "title": {
+            "en": "High"
+          }
+        },
+        {
+          "id": "med",
+          "title": {
+            "en": "Medium"
+          }
+        },
+        {
+          "id": "low",
+          "title": {
+            "en": "Low"
+          }
+        }
+      ],
+      "uiComponent": "picker",
       "getable": true,
-      "setable": true,
-      "min": 1,
-      "max": 3,
-      "step": 1
+      "setable": true
     },
     "thermostat_mode2": {
       "type": "enum",

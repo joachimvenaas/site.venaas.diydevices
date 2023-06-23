@@ -44,7 +44,7 @@ class Heatpump extends Device {
     } else {
       this.setCapabilityValue('target_temperature', this.getStoreValue('target_temperature'));
     }
-    this.setCapabilityValue('fan_speed', this.getStoreValue('fan_speed'));
+    this.setCapabilityValue('fan_speed', this.getStoreValue('fan_speed').toString());
     this.setCapabilityValue('thermostat_mode', this.getStoreValue('thermostat_mode'));
 
     /**
@@ -64,16 +64,9 @@ class Heatpump extends Device {
     }, 1000);
   }
 
-  async sendCommand(mode, fan, temp) {
+  async sendCommand(mode, fanspeed, temp) {
     const address = this.getStoreValue('address');
     const port = this.getStoreValue('port');
-
-    let fanspeed = 'low';
-    if (fan === 2) {
-      fanspeed = 'med';
-    } else if (fan === 3) {
-      fanspeed = 'high';
-    }
 
     let command = `${mode}_${fanspeed}_${temp}`;
 
