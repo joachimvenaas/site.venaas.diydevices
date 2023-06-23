@@ -5,8 +5,14 @@
   "class": "garagedoor",
   "capabilities": [
     "garagedoor_closed",
-    "alarm_motion"
+    "alarm_motion",
+    "alarm_generic"
   ],
+  "capabilitiesOptions": {
+    "alarm_generic": {
+      "title": { "en": "Open" }
+    }
+  },
   "platforms": [
     "local"
   ],

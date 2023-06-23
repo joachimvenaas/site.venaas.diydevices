@@ -35,17 +35,21 @@ class Garageport extends Device {
               this.setWarning('Port is already moving...');
             } else if (command === 'open') {
               this.setCapabilityValue('alarm_motion', true).catch((err) => this.log(err));
+              this.setCapabilityValue('alarm_generic', false).catch((err) => this.log(err));
               status = 'opening';
               setTimeout(() => {
                 status = 'open';
                 this.setCapabilityValue('alarm_motion', false).catch((err) => this.log(err));
+                this.setCapabilityValue('alarm_generic', true).catch((err) => this.log(err));
               }, 18000);
             } else if (command === 'close') {
               this.setCapabilityValue('alarm_motion', true).catch((err) => this.log(err));
+              this.setCapabilityValue('alarm_generic', false).catch((err) => this.log(err));
               status = 'closing';
               setTimeout(() => {
                 status = 'closed';
                 this.setCapabilityValue('alarm_motion', false).catch((err) => this.log(err));
+                this.setCapabilityValue('alarm_generic', false).catch((err) => this.log(err));
               }, 18000);
             }
             setTimeout(() => {
@@ -76,9 +80,11 @@ class Garageport extends Device {
             this.setAvailable();
             if (json.status === 'open') {
               this.setCapabilityValue('garagedoor_closed', false);
+              this.setCapabilityValue('alarm_generic', true).catch((err) => this.log(err));
               status = 'open';
             } else if (json.status === 'closed') {
               this.setCapabilityValue('garagedoor_closed', true);
+              this.setCapabilityValue('alarm_generic', false).catch((err) => this.log(err));
               status = 'closed';
             } else {
               status = json.status;
