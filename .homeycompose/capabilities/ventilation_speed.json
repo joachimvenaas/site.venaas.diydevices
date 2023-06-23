@@ -1,0 +1,78 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Ventilation speed"
+  },
+  "chartType": "stepLine",
+  "min": 0,
+  "max": 1,
+  "decimals": 2,
+  "units": "%",
+  "getable": true,
+  "setable": true,
+  "uiComponent": "slider",
+  "$flow": {
+    "triggers": [
+      {
+        "id": "ventilation_speed_changed",
+        "title": {
+          "en": "Ventilation speed changed"
+        },
+        "tokens": [
+          {
+            "name": "ventilation_speed",
+            "type": "number",
+            "title": {
+              "en": "Level"
+            },
+            "example": 0.5
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "ventilation_speed",
+        "highlight": true,
+        "title": {
+          "en": "Ventilation speed to"
+        },
+        "args": [
+          {
+            "name": "ventilation_speed",
+            "type": "range",
+            "min": 0,
+            "max": 1,
+            "step": 0.01,
+            "value": 0.5,
+            "label": "%",
+            "labelMultiplier": 100,
+            "labelDecimals": 0
+          }
+        ]
+      },
+      {
+        "id": "ventilation_relative",
+        "title": {
+          "en": "Set relative ventilation speed"
+        },
+        "hint": {
+          "en": "Increase or decrease with respect to the device's current ventilation speed."
+        },
+        "args": [
+          {
+            "name": "ventilation_speed",
+            "type": "range",
+            "min": -1,
+            "max": 1,
+            "step": 0.01,
+            "value": 0.5,
+            "label": "%",
+            "labelMultiplier": 100,
+            "labelDecimals": 0
+          }
+        ]
+      }
+    ]
+  }
+}

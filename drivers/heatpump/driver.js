@@ -12,27 +12,41 @@ class HeatpumpDriver extends Driver {
   }
 
   /**
-   * onPairListDevices is called when a user is adding a device
-   * and the 'list_devices' view is called.
-   * This should return an array with the data of devices that are available for pairing.
+   * Pairing
    */
-  async onPairListDevices() {
-    return [
-      {
-        name: 'Heatpump',
-        data: {
-          id: 'heatpump1',
+  async onPair(session) {
+    let address = '';
+
+    session.setHandler('ip_confirmed', async (ipView) => {
+      address = ipView;
+
+      if (!/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,5}$/.test(address)) {
+        this.log('Invalid ip/port provided');
+        return false;
+      }
+      this.log('Valid address, pairing proceeding');
+      return true;
+    });
+
+    session.setHandler('list_devices', async () => {
+      const devices = [
+        {
+          name: 'Heatpump',
+          data: {
+            id: 'heatpump1',
+          },
+          store: {
+            address: address.split(':')[0],
+            port: address.split(':')[1],
+            target_temperature: 23,
+            fan_speed: 1,
+            thermostat_mode: 'off',
+            power: 'off',
+          },
         },
-        store: {
-          address: '192.168.1.7',
-          port: '3000',
-          target_temperature: 23,
-          fan_speed: 1,
-          thermostat_mode: 'off',
-          power: 'off',
-        },
-      },
-    ];
+      ];
+      return devices;
+    });
   }
 
 }

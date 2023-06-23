@@ -1,41 +1,17 @@
 {
   "name": {
-    "en": "Heatpump"
+    "en": "Ventilation"
   },
-  "class": "thermostat",
+  "class": "fan",
   "capabilities": [
-    "target_temperature",
-    "measure_temperature",
-    "thermostat_mode",
-    "fan_speed"
+    "ventilation_speed",
+    "meter_power"
   ],
   "capabilitiesOptions": {
-    "thermostat_mode": {
-      "values": [
-        {
-          "id": "heat",
-          "title": {
-            "en": "Heat"
-          }
-        },
-        {
-          "id": "cool",
-          "title": {
-            "en": "Cool"
-          }
-        },
-        {
-          "id": "off",
-          "title": {
-            "en": "Off"
-          }
-        }
-      ]
-    },
-    "target_temperature": {
-      "step": 1,
-      "min": 16,
-      "max": 30
+    "meter_power": {
+      "units": { "en": "%" },
+      "title": { "en": "Fan speed" },
+      "insights": false
     }
   },
   "platforms": [

@@ -11,6 +11,8 @@ class Garageport extends Device {
     const port = this.getStoreValue('port');
     let status = 'unknown';
 
+    this.setCapabilityValue('alarm_motion', false).catch((err) => this.log(err));
+
     /**
      * Send command to garageport open/close
      * Set status to opening/closing while moving to prevent directional changes
@@ -32,14 +34,18 @@ class Garageport extends Device {
             if (json.status === 'error') {
               this.setWarning('Port is already moving...');
             } else if (command === 'open') {
+              this.setCapabilityValue('alarm_motion', true).catch((err) => this.log(err));
               status = 'opening';
               setTimeout(() => {
                 status = 'open';
+                this.setCapabilityValue('alarm_motion', false).catch((err) => this.log(err));
               }, 18000);
             } else if (command === 'close') {
+              this.setCapabilityValue('alarm_motion', true).catch((err) => this.log(err));
               status = 'closing';
               setTimeout(() => {
                 status = 'closed';
+                this.setCapabilityValue('alarm_motion', false).catch((err) => this.log(err));
               }, 18000);
             }
             setTimeout(() => {

@@ -34,7 +34,7 @@
       "class": "garagedoor",
       "capabilities": [
         "garagedoor_closed",
-        "alarm_generic"
+        "alarm_motion"
       ],
       "platforms": [
         "local"
@@ -48,6 +48,9 @@
         "xlarge": "/drivers/garageport/assets/images/xlarge.png"
       },
       "pair": [
+        {
+          "id": "ip_view"
+        },
         {
           "id": "list_devices",
           "template": "list_devices",
@@ -115,6 +118,9 @@
       },
       "pair": [
         {
+          "id": "ip_view"
+        },
+        {
           "id": "list_devices",
           "template": "list_devices",
           "navigation": {
@@ -127,6 +133,55 @@
         }
       ],
       "id": "heatpump"
+    },
+    {
+      "name": {
+        "en": "Ventilation"
+      },
+      "class": "fan",
+      "capabilities": [
+        "ventilation_speed",
+        "meter_power"
+      ],
+      "capabilitiesOptions": {
+        "meter_power": {
+          "units": {
+            "en": "%"
+          },
+          "title": {
+            "en": "Fan speed"
+          },
+          "insights": false
+        }
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "images": {
+        "small": "/drivers/ventilation/assets/images/small.png",
+        "large": "/drivers/ventilation/assets/images/large.png",
+        "xlarge": "/drivers/ventilation/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "ip_view"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "ventilation"
     }
   ],
   "capabilities": {
@@ -173,6 +228,20 @@
       "getable": true,
       "setable": true,
       "uiComponent": "picker"
+    },
+    "ventilation_speed": {
+      "type": "number",
+      "title": {
+        "en": "Ventilation speed"
+      },
+      "chartType": "stepLine",
+      "min": 0,
+      "max": 1,
+      "decimals": 2,
+      "units": "%",
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider"
     }
   }
 }

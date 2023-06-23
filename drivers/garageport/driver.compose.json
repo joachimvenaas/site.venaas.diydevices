@@ -3,7 +3,10 @@
     "en": "Garageport"
   },
   "class": "garagedoor",
-  "capabilities": [ "garagedoor_closed", "alarm_generic" ],
+  "capabilities": [
+    "garagedoor_closed",
+    "alarm_motion"
+  ],
   "platforms": [
     "local"
   ],
@@ -16,6 +19,9 @@
     "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
   },
   "pair": [
+    {
+      "id": "ip_view"
+    },
     {
       "id": "list_devices",
       "template": "list_devices",

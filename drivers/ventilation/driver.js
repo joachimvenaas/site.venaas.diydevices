@@ -2,13 +2,13 @@
 
 const { Driver } = require('homey');
 
-class GarageportDriver extends Driver {
+class VentilationDriver extends Driver {
 
   /**
    * onInit is called when the driver is initialized.
    */
   async onInit() {
-    this.log('Garageport driver has been initialized');
+    this.log('VentilationDriver has been initialized');
   }
 
   /**
@@ -31,13 +31,14 @@ class GarageportDriver extends Driver {
     session.setHandler('list_devices', async () => {
       const devices = [
         {
-          name: 'Garageport',
+          name: 'Ventilation Fan',
           data: {
-            id: 'garageport1',
+            id: 'ventilationfan1',
           },
           store: {
             address: address.split(':')[0],
             port: address.split(':')[1],
+            fan_speed: '0',
           },
         },
       ];
@@ -47,4 +48,4 @@ class GarageportDriver extends Driver {
 
 }
 
-module.exports = GarageportDriver;
+module.exports = VentilationDriver;
