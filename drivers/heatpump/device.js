@@ -54,6 +54,7 @@ class Heatpump extends Device {
     const port = this.getStoreValue('port');
 
     let command = `${mode}_${fanspeed}_${temp}`;
+    this.log('sending command', command);
 
     // Skruv av hvis thermostat mode = off
     if (mode === 'off' && this.getStoreValue('power') === true) {
@@ -125,6 +126,12 @@ class Heatpump extends Device {
         this.setStoreValue('target_temperature', json.targetTemperature);
         this.setCapabilityValue('thermostat_mode', json.targetState);
         this.setStoreValue('thermostat_mode', json.targetState);
+        if (json.targetState === 'off') {
+          this.setStoreValue('power', false);
+        } else {
+          this.setStoreValue('power', true);
+        }
+
         this.setCapabilityValue('fan_speed', json.targetSpeed);
         this.setStoreValue('fan_speed', json.targetSpeed);
       })
