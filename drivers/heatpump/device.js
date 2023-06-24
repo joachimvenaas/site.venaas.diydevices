@@ -3,6 +3,10 @@
 const { Device } = require('homey');
 const fetch = require('node-fetch');
 
+/*
+ * TODO: Legg inn flow card for vifte hastighet
+ */
+
 class Heatpump extends Device {
 
   /**
@@ -10,8 +14,6 @@ class Heatpump extends Device {
    */
   async onInit() {
     this.log('Heatpump has been initialized');
-    const address = this.getStoreValue('address');
-    const port = this.getStoreValue('port');
 
     /**
     * Ta seg av kommandoer i fra Homey
@@ -36,34 +38,17 @@ class Heatpump extends Device {
     });
 
     /**
-     * Les verdier i fra persistent storage
-     */
-    if (!this.getStoreValue('target_temperature')) {
-      this.setCapabilityValue('target_temperature', 23);
-      this.setStoreValue('target_temperature', 23);
-    } else {
-      this.setCapabilityValue('target_temperature', this.getStoreValue('target_temperature'));
-    }
-    this.setCapabilityValue('fan_speed', this.getStoreValue('fan_speed').toString());
-    this.setCapabilityValue('thermostat_mode', this.getStoreValue('thermostat_mode'));
-
-    /**
      * Read value from external source
      */
+    this.getState();
     setInterval(() => {
-      fetch(`http://${address}:${port}/`, { method: 'GET' })
-        .then((res) => res.json())
-        .then((json) => {
-          this.setAvailable();
-          this.setCapabilityValue('measure_temperature', json.currentTemperature);
-        })
-        .catch((error) => {
-          this.log('Did not recieve any response from AC');
-          this.setUnavailable('Did not recieve any response from AC');
-        });
-    }, 1000);
+      this.getState();
+    }, 10000);
   }
 
+  /**
+   * Commands external source
+   */
   async sendCommand(mode, fanspeed, temp) {
     const address = this.getStoreValue('address');
     const port = this.getStoreValue('port');
@@ -122,6 +107,31 @@ class Heatpump extends Device {
           this.setUnavailable('Did not recieve any response from AC');
         });
     }
+  }
+
+  /**
+   * Read value from external source
+   */
+  async getState() {
+    const address = this.getStoreValue('address');
+    const port = this.getStoreValue('port');
+
+    fetch(`http://${address}:${port}/`, { method: 'GET' })
+      .then((res) => res.json())
+      .then((json) => {
+        this.setAvailable();
+        this.setCapabilityValue('measure_temperature', json.currentTemperature);
+        this.setCapabilityValue('target_temperature', json.targetTemperature);
+        this.setStoreValue('target_temperature', json.targetTemperature);
+        this.setCapabilityValue('thermostat_mode', json.targetState);
+        this.setStoreValue('thermostat_mode', json.targetState);
+        this.setCapabilityValue('fan_speed', json.targetSpeed);
+        this.setStoreValue('fan_speed', json.targetSpeed);
+      })
+      .catch((error) => {
+        this.log('Did not recieve any response from AC');
+        this.setUnavailable('Did not recieve any response from AC');
+      });
   }
 
 }

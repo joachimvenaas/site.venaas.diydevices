@@ -144,6 +144,46 @@
     },
     {
       "name": {
+        "en": "Panel oven"
+      },
+      "class": "heater",
+      "capabilities": [
+        "target_temperature",
+        "measure_temperature",
+        "measure_power",
+        "meter_power"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "images": {
+        "small": "/drivers/panel-oven/assets/images/small.png",
+        "large": "/drivers/panel-oven/assets/images/large.png",
+        "xlarge": "/drivers/panel-oven/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "pair_view"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "panel-oven"
+    },
+    {
+      "name": {
         "en": "Ventilation"
       },
       "class": "fan",

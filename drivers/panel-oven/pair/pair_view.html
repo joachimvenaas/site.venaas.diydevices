@@ -1,0 +1,21 @@
+<div class="hy-tmpl-login_credentials-row row">
+    <label class="hy-label hy-tmpl-login_credentials-label" for="username">Account id</label>
+    <input class="hy-input-text" name="username" id="username" type="text" value="" placeholder="12345" autocomplete="off" data-np-checked="1">
+
+    <label class="hy-label hy-tmpl-login_credentials-label" for="password">Client secret</label>
+    <input class="hy-input-text" name="password" id="password" type="text" value="" placeholder="J1l7WJud4k69qf9H" autocomplete="off" data-np-checked="1">
+
+    <input onclick="confirmForm()" class="hy-button hy-button-primary hy-button-fill hy-tmpl-login_credentials-submit button" type="submit" value="Submit" data-np-checked="1">
+</div>
+<script type="application/javascript">
+    Homey.setTitle('Please set account id / client secret address');
+    function confirmForm() {
+        Homey.emit("form_confirmed", `${document.getElementById("username").value}_${document.getElementById("password").value}`).then((result) => {
+            if (result) {
+                Homey.nextView();
+            } else {
+                Homey.alert('Incorrect account id/client secret specified', 'error');
+            }
+        });
+    }
+</script>
