@@ -9,6 +9,8 @@ const fetch = require('node-fetch');
 
 class Heatpump extends Device {
 
+  address = this.getStoreValue('address');
+  port = this.getStoreValue('port');
   /**
    * onInit is called when the device is initialized.
    */
@@ -50,9 +52,6 @@ class Heatpump extends Device {
    * Commands external source
    */
   async sendCommand(mode, fanspeed, temp) {
-    const address = this.getStoreValue('address');
-    const port = this.getStoreValue('port');
-
     let command = `${mode}_${fanspeed}_${temp}`;
     this.log('sending command', command);
 
@@ -60,7 +59,7 @@ class Heatpump extends Device {
     if (mode === 'off' && this.getStoreValue('power') === true) {
       command = 'power_off';
       this.setStoreValue('power', false);
-      fetch(`http://${address}:${port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
+      fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
         .then((res) => res.json())
         .then((json) => {
           this.log('Command sent:', command, 'message recieved:', json.status);
@@ -72,14 +71,14 @@ class Heatpump extends Device {
 
     // Skru på hvis siste thermostat mode var off
     } else if (mode !== 'off' && this.getStoreValue('power') === false) {
-      fetch(`http://${address}:${port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: '{ "command": "power_on" }' })
+      fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: '{ "command": "power_on" }' })
         .then((res) => res.json())
         .then((json) => {
           this.log('Command sent:', 'power_on', 'message recieved:', json.status);
 
           // Vent 1 sek før videre kommandoer sendes
           setTimeout(() => {
-            fetch(`http://${address}:${port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
+            fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
               .then((res) => res.json())
               .then((json) => {
                 this.log('Command sent:', command, 'message recieved:', json.status);
@@ -98,7 +97,7 @@ class Heatpump extends Device {
 
     // Send kommando hvis den allerede er på
     } else if (mode !== 'off') {
-      fetch(`http://${address}:${port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
+      fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
         .then((res) => res.json())
         .then((json) => {
           this.log('Command sent:', command, 'message recieved:', json.status);
@@ -114,26 +113,11 @@ class Heatpump extends Device {
    * Read value from external source
    */
   async getState() {
-    const address = this.getStoreValue('address');
-    const port = this.getStoreValue('port');
-
-    fetch(`http://${address}:${port}/`, { method: 'GET' })
+    fetch(`http://${this.address}:${this.port}/`, { method: 'GET' })
       .then((res) => res.json())
       .then((json) => {
         this.setAvailable();
         this.setCapabilityValue('measure_temperature', json.currentTemperature);
-        this.setCapabilityValue('target_temperature', json.targetTemperature);
-        this.setStoreValue('target_temperature', json.targetTemperature);
-        this.setCapabilityValue('thermostat_mode', json.targetState);
-        this.setStoreValue('thermostat_mode', json.targetState);
-        if (json.targetState === 'off') {
-          this.setStoreValue('power', false);
-        } else {
-          this.setStoreValue('power', true);
-        }
-
-        this.setCapabilityValue('fan_speed', json.targetSpeed);
-        this.setStoreValue('fan_speed', json.targetSpeed);
       })
       .catch((error) => {
         this.log('Did not recieve any response from AC');
