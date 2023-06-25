@@ -5,37 +5,32 @@ const fetch = require('node-fetch');
 
 class PanelOvenDevice extends Device {
 
+  token = 'init';
+  intervalChecker = null;
+
   /**
    * onInit is called when the device is initialized.
    */
   async onInit() {
     this.log('Panel Oven has been initialized');
-    let token = 'init';
 
     // Renew token on start
     this.renewToken((newToken) => {
-      token = newToken;
-      setTimeout(() => {
-        this.fetchData(token);
-      }, 2000);
+      this.token = newToken;
+      setTimeout(() => this.fetchData(), 2000); // Read data
     });
 
-    setInterval(() => {
-      this.fetchData(token);
-    }, 60000);
+    this.intervalManager(true);
 
+    // Renew token on interval
     setInterval(() => {
       this.renewToken((newToken) => {
-        token = newToken;
+        this.token = newToken;
       });
     }, 5 * 60000);
 
-    /**
-    * Ta seg av kommandoer i fra Homey
-    */
-    this.registerCapabilityListener('target_temperature', async (value) => {
-      this.sendCommand(token, value);
-    });
+    // Ta seg av kommandoer i fra Homey
+    this.registerCapabilityListener('target_temperature', async (value) => this.sendCommand(value));
   }
 
   /**
@@ -66,11 +61,11 @@ class PanelOvenDevice extends Device {
   /**
    * Fetch data
    */
-  async fetchData(token) {
+  async fetchData() {
     fetch('https://api-1.adax.no/client-api/rest/v1/content/?withEnergy=1', {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${this.token}`,
       },
     })
       .then((res) => res.json())
@@ -101,33 +96,52 @@ class PanelOvenDevice extends Device {
   /**
    * Send command
    */
-  async sendCommand(token, temp = 0) {
-    this.log('command', temp);
+  async sendCommand(temp = 0) {
+    this.log('sending command', temp);
 
-    const payload = `{ "rooms": [  { "id": 176401, "targetTemperature": "${temp * 100}" } ] }`;
+    this.fetchData();
+    this.intervalManager(false); // Stops current checking
 
     fetch('https://api-1.adax.no/client-api/rest/v1/control', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${this.token}`,
         'Content-Type': 'application/json',
       },
-      body: payload,
+      body: `{ "rooms": [  { "id": 176401, "targetTemperature": "${temp * 100}" } ] }`,
     })
       .then((res) => res.json())
       .then((json) => {
         const { status } = json.rooms[0];
+
         if (status !== 'OK') {
-          this.setWarning(`Error: ${status}`);
-          setTimeout(() => this.unsetWarning(), 3000);
+          this.setWarning(`Error: ${status}`); // Set warning
+          this.log(`Error: ${status}`);
+          setTimeout(() => this.unsetWarning(), 3000); // Clears warning
+        } else {
+          this.log('Command recieved OK');
         }
+        this.intervalManager(true); // Start interval checkin'
       })
       .catch((error) => {
-        this.log(error);
-        this.log('Did not recieve any response from Glamox');
-        this.setWarning('Did not recieve any response from Glamox');
-        setTimeout(() => this.unsetWarning(), 3000);
+        this.log('Error on response from Glamox');
+        this.setWarning('Error on response from Glamox'); // Set warning
+        setTimeout(() => this.unsetWarning(), 3000); // Clears warning
+        this.intervalManager(true); // Start interval checkin'
       });
+  }
+
+  /**
+   * Start and stop interval for status checker
+   */
+  async intervalManager(start) {
+    if (start) {
+      this.log('Started/restarted interval checker');
+      this.intervalChecker = setInterval(() => this.fetchData(), 60000);
+    } else {
+      this.log('Cleared interval checker');
+      clearInterval(this.intervalChecker);
+    }
   }
 
 }

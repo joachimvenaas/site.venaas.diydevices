@@ -153,6 +153,14 @@
         "measure_power",
         "meter_power"
       ],
+      "capabilitiesOptions": {
+        "target_temperature": {
+          "step": 1
+        },
+        "measure_temperature": {
+          "decimals": 1
+        }
+      },
       "platforms": [
         "local"
       ],

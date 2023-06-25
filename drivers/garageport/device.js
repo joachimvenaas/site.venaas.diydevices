@@ -8,27 +8,22 @@ class Garageport extends Device {
   status = 'unknown';
   address = this.getStoreValue('address');
   port = this.getStoreValue('port');
+  intervalChecker = null;
 
+  /**
+   * On initialze device
+   */
   async onInit() {
     this.log('Garageport device has been initialized');
-
     this.setCapabilityValue('alarm_motion', false).catch((err) => this.log(err));
+    this.setCapabilityValue('alarm_generic', false).catch((err) => this.log(err));
 
-    /**
-     * Send command to garageport open/close
-     * Set status to opening/closing while moving to prevent directional changes
-     */
-    this.registerCapabilityListener('garagedoor_closed', async (value) => {
-      this.runCommand(value);
-    });
+    // Send command to garageport open/close
+    this.registerCapabilityListener('garagedoor_closed', async (value) => this.runCommand(value));
 
-    /**
-     * Read value from external source
-     */
+    // Read value from external source
     this.getStatus();
-    setInterval(() => {
-      this.getStatus();
-    }, 2000);
+    this.intervalManager(true);
   }
 
   /**
@@ -38,22 +33,26 @@ class Garageport extends Device {
     fetch(`http://${this.address}:${this.port}/`, { method: 'GET' })
       .then((res) => res.json())
       .then((json) => {
-        this.setAvailable();
+        this.setAvailable(); // Mark device as available
 
+        // Result is "open" and latest current status is not "open"
         if (json.status === 'open' && this.status !== 'open') {
           this.setCapabilityValue('garagedoor_closed', false);
-          this.setCapabilityValue('alarm_generic', true).catch((err) => this.log(err));
-          this.setCapabilityValue('alarm_motion', false).catch((err) => this.log(err));
-          this.status = 'open';
+          this.setCapabilityValue('alarm_generic', true).catch((err) => this.log(err)); // Active port open alert
+          this.setCapabilityValue('alarm_motion', false).catch((err) => this.log(err)); // Disable motion alert
+
+        // Result is "closed" and current status is not "closed"
         } else if (json.status === 'closed' && this.status !== 'closed') {
           this.setCapabilityValue('garagedoor_closed', true);
-          this.setCapabilityValue('alarm_generic', false).catch((err) => this.log(err));
-          this.setCapabilityValue('alarm_motion', false).catch((err) => this.log(err));
-          this.status = 'closed';
-        } else if (json.status !== 'open' && json.status !== 'closed') {
-          this.setCapabilityValue('alarm_motion', true).catch((err) => this.log(err));
+          this.setCapabilityValue('alarm_generic', false).catch((err) => this.log(err)); // Disable port open alert
+          this.setCapabilityValue('alarm_motion', false).catch((err) => this.log(err)); // Disable motion alert
+
+        // Opening or closing
+        } else if (json.status === 'opening' && json.status === 'closing') {
+          this.setCapabilityValue('alarm_motion', true).catch((err) => this.log(err)); // Activate motion alert
         }
 
+        // Update current status to result status
         this.status = json.status;
       })
       .catch((error) => {
@@ -68,47 +67,63 @@ class Garageport extends Device {
   async runCommand(value) {
     const command = value === false ? 'open' : 'close';
 
+    this.intervalManager(false); // Stops current checking
+    this.getStatus(); // Gets current status
+
     if (this.status === 'open' || this.status === 'closed') {
       fetch(`http://${this.address}:${this.port}/${command}`, { method: 'POST' })
         .then((res) => res.json())
         .then((json) => {
-          this.setAvailable();
+          this.setAvailable(); // Mark device as available
           this.log('Command sent:', command, 'status recieved:', json.status);
 
+          // Error, in motion
           if (json.status === 'error') {
             this.setWarning('Port is already moving...');
+            this.log('Port is already moving...');
+            setTimeout(() => this.unsetWarning(), 3000); // Clears warning
+            this.intervalManager(true); // Start interval checkin'
+
+          // Open
           } else if (command === 'open') {
-            this.setCapabilityValue('alarm_motion', true).catch((err) => this.log(err));
-            this.setCapabilityValue('alarm_generic', false).catch((err) => this.log(err));
+            this.setCapabilityValue('alarm_motion', true).catch((err) => this.log(err)); // Activate motion alert
+            this.setCapabilityValue('alarm_generic', false).catch((err) => this.log(err)); // Disable open port alert
             this.status = 'opening';
-            setTimeout(() => {
-              this.status = 'open';
-              this.setCapabilityValue('alarm_motion', false).catch((err) => this.log(err));
-              this.setCapabilityValue('alarm_generic', true).catch((err) => this.log(err));
-            }, 18000);
+            setTimeout(() => this.intervalManager(true), 20000); // Wait for 20 secs to restart interval checker
+
+          // Close
           } else if (command === 'close') {
-            this.setCapabilityValue('alarm_motion', true).catch((err) => this.log(err));
-            this.setCapabilityValue('alarm_generic', false).catch((err) => this.log(err));
+            this.setCapabilityValue('alarm_motion', true).catch((err) => this.log(err)); // Activate motion alert
+            this.setCapabilityValue('alarm_generic', false).catch((err) => this.log(err)); // Disable open port alert
             this.status = 'closing';
-            setTimeout(() => {
-              this.status = 'closed';
-              this.setCapabilityValue('alarm_motion', false).catch((err) => this.log(err));
-              this.setCapabilityValue('alarm_generic', false).catch((err) => this.log(err));
-            }, 18000);
+            setTimeout(() => this.intervalManager(true), 20000); // Wait for 20 secs to restart interval checker
           }
-          setTimeout(() => {
-            this.unsetWarning();
-          }, 3000);
         })
         .catch((error) => {
           this.log('Failed commanding garageport');
-          this.setUnavailable('Did not recieve any response from garageport');
+          this.setUnavailable('Failed sending command, did not recieve any response from garageport'); // Mark device as unavailable
+          this.intervalManager(true); // Start interval checkin'
         });
+
+    // Status is not "open" or "closed"
     } else {
+      this.log('Port is already moving...');
       this.setWarning('Port is already moving...');
-      setTimeout(() => {
-        this.unsetWarning();
-      }, 3000);
+      setTimeout(() => this.unsetWarning(), 3000); // Clears warning
+      this.intervalManager(true); // Start interval checkin'
+    }
+  }
+
+  /**
+   * Start and stop interval for status checker
+   */
+  async intervalManager(start) {
+    if (start) {
+      this.log('Started/restarted interval checker');
+      this.intervalChecker = setInterval(() => this.getStatus(), 1000);
+    } else {
+      this.log('Cleared interval checker');
+      clearInterval(this.intervalChecker);
     }
   }
 

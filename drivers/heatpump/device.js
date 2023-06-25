@@ -11,6 +11,7 @@ class Heatpump extends Device {
 
   address = this.getStoreValue('address');
   port = this.getStoreValue('port');
+
   /**
    * onInit is called when the device is initialized.
    */
@@ -39,13 +40,9 @@ class Heatpump extends Device {
       this.sendCommand(value, this.getStoreValue('fan_speed'), this.getStoreValue('target_temperature'));
     });
 
-    /**
-     * Read value from external source
-     */
-    this.getState();
-    setInterval(() => {
-      this.getState();
-    }, 10000);
+    // Read value from external source
+    this.getTemp();
+    setInterval(() => this.getTemp(), 10000);
   }
 
   /**
@@ -112,7 +109,7 @@ class Heatpump extends Device {
   /**
    * Read value from external source
    */
-  async getState() {
+  async getTemp() {
     fetch(`http://${this.address}:${this.port}/`, { method: 'GET' })
       .then((res) => res.json())
       .then((json) => {
