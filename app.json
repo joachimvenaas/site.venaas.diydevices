@@ -240,6 +240,143 @@
       "id": "ventilation"
     }
   ],
+  "flow": {
+    "conditions": [
+      {
+        "id": "temperature-is-above",
+        "title": {
+          "en": "Temperature is !{{above|below}} [[temp]]°C"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=heatpump"
+          },
+          {
+            "type": "number",
+            "name": "temp",
+            "placeholder": {
+              "en": "20"
+            },
+            "min": 0,
+            "max": 40,
+            "step": 1
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "set-fan-speed",
+        "title": {
+          "en": "Set fan speed"
+        },
+        "titleFormatted": {
+          "en": "Set fan speed to [[speed]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=heatpump"
+          },
+          {
+            "type": "dropdown",
+            "name": "speed",
+            "values": [
+              {
+                "id": "low",
+                "label": {
+                  "en": "Low"
+                }
+              },
+              {
+                "id": "med",
+                "label": {
+                  "en": "Med"
+                }
+              },
+              {
+                "id": "high",
+                "label": {
+                  "en": "High"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set-all",
+        "title": {
+          "en": "Set all"
+        },
+        "titleFormatted": {
+          "en": "Set mode to [[mode]], temperature to [[temp]]°C and fan speed to [[speed]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=heatpump"
+          },
+          {
+            "type": "dropdown",
+            "name": "mode",
+            "values": [
+              {
+                "id": "off",
+                "label": {
+                  "en": "Off"
+                }
+              },
+              {
+                "id": "heat",
+                "label": {
+                  "en": "Heat"
+                }
+              },
+              {
+                "id": "cool",
+                "label": {
+                  "en": "Cool"
+                }
+              }
+            ]
+          },
+          {
+            "type": "number",
+            "name": "temp"
+          },
+          {
+            "type": "dropdown",
+            "name": "speed",
+            "values": [
+              {
+                "id": "low",
+                "label": {
+                  "en": "Low"
+                }
+              },
+              {
+                "id": "med",
+                "label": {
+                  "en": "Med"
+                }
+              },
+              {
+                "id": "high",
+                "label": {
+                  "en": "High"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
   "capabilities": {
     "fan_speed": {
       "type": "enum",

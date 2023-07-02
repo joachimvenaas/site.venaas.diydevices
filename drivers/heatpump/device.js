@@ -3,10 +3,6 @@
 const { Device } = require('homey');
 const fetch = require('node-fetch');
 
-/*
- * TODO: Legg inn flow card for vifte hastighet
- */
-
 class Heatpump extends Device {
 
   address = this.getStoreValue('address');
@@ -48,7 +44,14 @@ class Heatpump extends Device {
   /**
    * Commands external source
    */
-  async sendCommand(mode, fanspeed, temp) {
+  async sendCommand(mode = this.getStoreValue('thermostat_mode'), fanspeed = this.getStoreValue('fan_speed'), temp = this.getStoreValue('target_temperature')) {
+    // Set fan speed flow card action
+    if (mode === 'flow' && temp === 'flow') {
+      this.log('Setting fan speed from action flow card');
+      mode = this.getStoreValue('thermostat_mode');
+      temp = this.getStoreValue('target_temperature');
+    }
+
     let command = `${mode}_${fanspeed}_${temp}`;
     this.log('sending command', command);
 
@@ -58,9 +61,7 @@ class Heatpump extends Device {
       this.setStoreValue('power', false);
       fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
         .then((res) => res.json())
-        .then((json) => {
-          this.log('Command sent:', command, 'message recieved:', json.status);
-        })
+        .then((json) => this.reportStatus(json, command, mode, fanspeed, temp))
         .catch((error) => {
           this.log('Failed commanding AC unit');
           this.setUnavailable('Did not recieve any response from AC');
@@ -77,9 +78,7 @@ class Heatpump extends Device {
           setTimeout(() => {
             fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
               .then((res) => res.json())
-              .then((json) => {
-                this.log('Command sent:', command, 'message recieved:', json.status);
-              })
+              .then((json) => this.reportStatus(json, command, mode, fanspeed, temp))
               .catch((error) => {
                 this.log('Failed commanding AC unit');
                 this.setUnavailable('Did not recieve any response from AC');
@@ -96,14 +95,19 @@ class Heatpump extends Device {
     } else if (mode !== 'off') {
       fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
         .then((res) => res.json())
-        .then((json) => {
-          this.log('Command sent:', command, 'message recieved:', json.status);
-        })
+        .then((json) => this.reportStatus(json, command, mode, fanspeed, temp))
         .catch((error) => {
           this.log('Failed commanding AC unit');
           this.setUnavailable('Did not recieve any response from AC');
         });
     }
+  }
+
+  async reportStatus(json, command, mode, fanspeed, temp) {
+    this.log('Command sent:', command, 'message recieved:', json.status);
+    this.setStoreValue('thermostat_mode', mode);
+    this.setStoreValue('fan_speed', fanspeed);
+    this.setStoreValue('target_temperature', temp);
   }
 
   /**
@@ -115,6 +119,7 @@ class Heatpump extends Device {
       .then((json) => {
         this.setAvailable();
         this.setCapabilityValue('measure_temperature', json.currentTemperature);
+        this.setStoreValue('measure_temperature', json.currentTemperature);
       })
       .catch((error) => {
         this.log('Did not recieve any response from AC');

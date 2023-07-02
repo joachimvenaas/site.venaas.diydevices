@@ -9,6 +9,28 @@ class HeatpumpDriver extends Driver {
    */
   async onInit() {
     this.log('Heatpump driver has been initialized');
+
+    // Set Fan speed Flow card
+    const fanSpeedFlowCard = this.homey.flow.getActionCard('set-fan-speed');
+    fanSpeedFlowCard.registerRunListener(async (args) => {
+      await args.device.sendCommand('flow', args.speed, 'flow');
+    });
+
+    // Set everything flow card
+    const setAllFlowCard = this.homey.flow.getActionCard('set-all');
+    setAllFlowCard.registerRunListener(async (args) => {
+      this.log('Set all flow card!');
+      await args.device.sendCommand(args.mode, args.speed, args.temp);
+    });
+
+    // Temperature is above/below card
+    const temperatureIsAboveCard = this.homey.flow.getConditionCard('temperature-is-above');
+    temperatureIsAboveCard.registerRunListener(async (args) => {
+      if (args.device.getStoreValue('measure_temperature') > args.temp) {
+        return true;
+      }
+      return false;
+    });
   }
 
   /**
