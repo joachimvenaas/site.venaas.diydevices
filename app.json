@@ -267,6 +267,32 @@
             "step": 1
           }
         ]
+      },
+      {
+        "id": "temperature-is-above-panel-oven",
+        "title": {
+          "en": "Temperature is above"
+        },
+        "titleFormatted": {
+          "en": "Temperature is !{{above|below}} [[temp]]°C"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=panel-oven"
+          },
+          {
+            "type": "number",
+            "name": "temp",
+            "placeholder": {
+              "en": "20"
+            },
+            "min": 0,
+            "max": 40,
+            "step": 1
+          }
+        ]
       }
     ],
     "actions": [

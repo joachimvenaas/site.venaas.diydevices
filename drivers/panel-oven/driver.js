@@ -11,6 +11,15 @@ class PanelOvenDriver extends Driver {
    */
   async onInit() {
     this.log('MyDriver has been initialized');
+
+    // Temperature is above/below card
+    const temperatureIsAboveCard = this.homey.flow.getConditionCard('temperature-is-above-panel-oven');
+    temperatureIsAboveCard.registerRunListener(async (args) => {
+      if (args.device.getCapabilityValue('measure_temperature') > args.temp) {
+        return true;
+      }
+      return false;
+    });
   }
 
   /**
