@@ -103,6 +103,9 @@
     {
       "id": "temperature-is-above",
       "title": {
+        "en": "Temperature is above"
+      },
+      "titleFormatted": {
         "en": "Temperature is !{{above|below}} [[temp]]°C"
       },
       "args": [
