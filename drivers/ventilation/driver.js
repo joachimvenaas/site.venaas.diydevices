@@ -9,6 +9,12 @@ class VentilationDriver extends Driver {
    */
   async onInit() {
     this.log('VentilationDriver has been initialized');
+
+    // Set Fan speed Flow card
+    const runVentilationCard = this.homey.flow.getActionCard('run-ventilation');
+    runVentilationCard.registerRunListener(async (args) => {
+      await args.device.sendCommand(args.speed);
+    });
   }
 
   /**

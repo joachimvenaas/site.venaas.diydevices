@@ -11,6 +11,7 @@
   ],
   "capabilitiesOptions": {
     "thermostat_mode": {
+      "insights": true,
       "values": [
         {
           "id": "heat",
@@ -33,6 +34,7 @@
       ]
     },
     "target_temperature": {
+      "insights": true,
       "step": 1,
       "min": 16,
       "max": 30

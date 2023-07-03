@@ -1,0 +1,25 @@
+{
+  "actions": [
+    {
+      "id": "run-ventilation",
+      "title": {
+        "en": "Set fan speed"
+      },
+      "titleFormatted": {
+        "en": "Set fan speed to [[speed]]%"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "speed",
+          "placeholder": {
+            "en": "50"
+          },
+          "min": 0,
+          "max": 100,
+          "step": 1
+        }
+      ]
+    }
+  ]
+}
