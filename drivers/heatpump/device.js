@@ -108,6 +108,10 @@ class Heatpump extends Device {
     this.setStoreValue('thermostat_mode', mode);
     this.setStoreValue('fan_speed', fanspeed);
     this.setStoreValue('target_temperature', temp);
+
+    this.setCapabilityValue('thermostat_mode', mode);
+    this.setCapabilityValue('fan_speed', fanspeed);
+    this.setCapabilityValue('target_temperature', temp);
   }
 
   /**
