@@ -38,7 +38,7 @@ class Heatpump extends Device {
 
     // Read value from external source
     this.getTemp();
-    setInterval(() => this.getTemp(), 10000);
+    setInterval(() => this.getTemp(), 60000);
   }
 
   /**
@@ -118,16 +118,14 @@ class Heatpump extends Device {
    * Read value from external source
    */
   async getTemp() {
-    fetch(`http://${this.address}:${this.port}/`, { method: 'GET' })
+    fetch('http://192.168.1.104/netatmo.json', { method: 'GET' })
       .then((res) => res.json())
       .then((json) => {
-        this.setAvailable();
-        this.setCapabilityValue('measure_temperature', json.currentTemperature);
-        this.setStoreValue('measure_temperature', json.currentTemperature);
+        this.setCapabilityValue('measure_temperature', json.inne.now);
+        this.setStoreValue('measure_temperature', json.inne.now);
       })
       .catch((error) => {
-        this.log('Did not recieve any response from AC');
-        this.setUnavailable('Did not recieve any response from AC');
+        this.log('Failed getting current temperature');
       });
   }
 
