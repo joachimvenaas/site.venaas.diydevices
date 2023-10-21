@@ -8,7 +8,9 @@
     "custom_string.starts",
     "meter_power.needed",
     "custom_string.finished",
-    "custom_string.connected"
+    "custom_string.connected",
+    "price.optimal",
+    "price.pluggedin"
   ],
   "capabilitiesOptions": {
     "meter_power.needed": {
@@ -29,6 +31,17 @@
     "custom_string.connected": {
       "title": {
         "en": "Car connected"
+      },
+      "icon": "/assets/capability_icons/charger.svg"
+    },
+    "price.optimal": {
+      "title": {
+        "en": "Price"
+      }
+    },
+    "price.pluggedin": {
+      "title": {
+        "en": "Price without magic"
       }
     }
   },

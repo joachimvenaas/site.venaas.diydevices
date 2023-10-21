@@ -1,0 +1,11 @@
+{ 
+     "type": "number", 
+     "title": { 
+         "en": "Price"
+     }, 
+     "getable": true, 
+     "setable": false, 
+     "insights": false, 
+     "icon": "/assets/capability_icons/coin.svg",
+     "uiComponent": "sensor"
+ }
