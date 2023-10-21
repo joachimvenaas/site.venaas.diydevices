@@ -146,6 +146,69 @@
     },
     {
       "name": {
+        "en": "Magic Charger"
+      },
+      "class": "other",
+      "capabilities": [
+        "onoff",
+        "custom_string.starts",
+        "meter_power.needed",
+        "custom_string.finished",
+        "custom_string.connected"
+      ],
+      "capabilitiesOptions": {
+        "meter_power.needed": {
+          "title": {
+            "en": "Power needed"
+          }
+        },
+        "custom_string.finished": {
+          "title": {
+            "en": "Finished charging"
+          }
+        },
+        "custom_string.starts": {
+          "title": {
+            "en": "Starts charging"
+          }
+        },
+        "custom_string.connected": {
+          "title": {
+            "en": "Car connected"
+          }
+        }
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "images": {
+        "small": "/drivers/magiccharger/assets/images/small.png",
+        "large": "/drivers/magiccharger/assets/images/large.png",
+        "xlarge": "/drivers/magiccharger/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "pair_view"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "magiccharger"
+    },
+    {
+      "name": {
         "en": "Panel oven"
       },
       "class": "heater",
@@ -435,6 +498,17 @@
     ]
   },
   "capabilities": {
+    "custom_string": {
+      "type": "string",
+      "title": {
+        "en": "Custom string"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/assets/capability_icons/clock.svg",
+      "uiComponent": "sensor"
+    },
     "fan_speed": {
       "type": "enum",
       "title": {
