@@ -21,6 +21,7 @@ class MagicChargerDevice extends Device {
     await this.addCapability('meter_power.needed');
     await this.addCapability('price.optimal');
     await this.addCapability('price.pluggedin');
+    await this.addCapability('price.total_savings');
 
     // Check magic charger status, loop
     this.fetchStatus();
@@ -60,6 +61,7 @@ class MagicChargerDevice extends Device {
           this.setCapabilityValue('meter_power.needed', json.charging_needed);
           this.setCapabilityValue('price.pluggedin', parseFloat(json.price_pluggedin));
           this.setCapabilityValue('price.optimal', parseFloat(json.price_optimal));
+          this.setCapabilityValue('price.total_savings', parseFloat(json.total_savings));
         } else {
           this.setCapabilityValue('custom_string.starts', '-');
           this.setCapabilityValue('custom_string.finished', '-');
@@ -67,6 +69,7 @@ class MagicChargerDevice extends Device {
           this.setCapabilityValue('meter_power.needed', 0);
           this.setCapabilityValue('price.pluggedin', 0);
           this.setCapabilityValue('price.optimal', 0);
+          this.setCapabilityValue('price.total_savings', 0);
         }
       })
 

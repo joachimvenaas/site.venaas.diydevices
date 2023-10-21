@@ -189,6 +189,11 @@
           "title": {
             "en": "Price without magic"
           }
+        },
+        "price.total_savings": {
+          "title": {
+            "en": "Total savings"
+          }
         }
       },
       "platforms": [
@@ -560,7 +565,8 @@
       "setable": false,
       "insights": false,
       "icon": "/assets/capability_icons/coin.svg",
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "units": "NOK"
     },
     "thermostat_mode2": {
       "type": "enum",

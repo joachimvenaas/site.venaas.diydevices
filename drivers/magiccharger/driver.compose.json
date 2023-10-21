@@ -43,6 +43,11 @@
       "title": {
         "en": "Price without magic"
       }
+    },
+    "price.total_savings": {
+      "title": {
+        "en": "Total savings"
+      }
     }
   },
   "platforms": [

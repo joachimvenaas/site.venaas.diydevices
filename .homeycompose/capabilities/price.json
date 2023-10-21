@@ -7,5 +7,6 @@
      "setable": false, 
      "insights": false, 
      "icon": "/assets/capability_icons/coin.svg",
-     "uiComponent": "sensor"
+     "uiComponent": "sensor",
+     "units": "NOK"
  }
