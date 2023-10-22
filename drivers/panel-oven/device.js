@@ -62,30 +62,70 @@ class PanelOvenDevice extends Device {
    * Fetch data
    */
   async fetchData() {
+    const roomId = 176401;
+    let targetTemp;
+    let measureTemp;
+    let meterPower;
+
+    // Fetch data (except energy)
     fetch('https://api-1.adax.no/client-api/rest/v1/content/?withEnergy=1', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${this.token}`,
       },
     })
+      // Convert to JSON
       .then((res) => res.json())
+
+      // Get data
       .then((json) => {
-        let targetTemp;
         if (json.rooms[0]?.targetTemperature) {
           targetTemp = json.rooms[0].targetTemperature / 100;
         } else {
           targetTemp = 4;
         }
+        measureTemp = json.rooms[0].temperature / 100;
+        meterPower = json.devices[0].energyWh / 1000;
+      })
 
-        const measureTemp = json.rooms[0].temperature / 100;
-        const meterPower = json.devices[0].energyWh / 1000;
+      // Fetch energy
+      .then(() => {
+        return fetch(`https://api-1.adax.no/client-api/rest/v1/energy_log/${roomId}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+          },
+        });
+      })
 
+      // Convert to JSON
+      .then((res) => res.json())
+
+      // Get daily energy data
+      .then((json) => {
+        const now = new Date();
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const totalEnergy = json.points.reduce((accumulator, point) => {
+          if (new Date(point.fromTime) >= startOfDay) {
+            return accumulator + point.energyWh;
+          }
+          return accumulator;
+        }, 0);
+
+        meterPower = totalEnergy / 1000;
+        // this.log(`Total energy for this day: ${meterPower}kWh`);
+      })
+
+      // Set values
+      .then(() => {
         this.setCapabilityValue('measure_temperature', measureTemp);
         this.setCapabilityValue('target_temperature', targetTemp);
         this.setCapabilityValue('measure_power', targetTemp > measureTemp === true ? 800 : 0);
         this.setCapabilityValue('meter_power', meterPower);
         this.setAvailable();
       })
+
+      // 🐛 Errrr handling
       .catch((error) => {
         this.log(error);
         this.log('Did not recieve any response from Glamox');
