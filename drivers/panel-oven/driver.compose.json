@@ -7,7 +7,8 @@
     "target_temperature",
     "measure_temperature",
     "measure_power",
-    "meter_power"
+    "meter_power",
+    "meter_power.weekly"
   ],
   "capabilitiesOptions": {
     "target_temperature": {
@@ -15,6 +16,16 @@
     },
     "measure_temperature": {
       "decimals": 1
+    },
+    "meter_power": {
+      "title": {
+        "en": "Power used today"
+      }
+    },
+    "meter_power.weekly": {
+      "title": {
+        "en": "Power used last 7 days"
+      }
     }
   },
   "platforms": [

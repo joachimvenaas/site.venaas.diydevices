@@ -63,7 +63,7 @@ class Heatpump extends Device {
         .then((res) => res.json())
         .then((json) => this.reportStatus(json, command, mode, fanspeed, temp))
         .catch((error) => {
-          this.log('Failed commanding AC unit');
+          this.log('Failed commanding AC unit', error);
           this.setUnavailable('Did not recieve any response from AC');
         });
 
@@ -80,13 +80,13 @@ class Heatpump extends Device {
               .then((res) => res.json())
               .then((json) => this.reportStatus(json, command, mode, fanspeed, temp))
               .catch((error) => {
-                this.log('Failed commanding AC unit');
+                this.log('Failed commanding AC unit', error);
                 this.setUnavailable('Did not recieve any response from AC');
               });
           }, 1000);
         })
         .catch((error) => {
-          this.log('Failed commanding AC unit');
+          this.log('Failed commanding AC unit', error);
           this.setUnavailable('Did not recieve any response from AC');
         });
       this.setStoreValue('power', true);
@@ -97,7 +97,7 @@ class Heatpump extends Device {
         .then((res) => res.json())
         .then((json) => this.reportStatus(json, command, mode, fanspeed, temp))
         .catch((error) => {
-          this.log('Failed commanding AC unit');
+          this.log('Failed commanding AC unit', error);
           this.setUnavailable('Did not recieve any response from AC');
         });
     }
@@ -125,7 +125,7 @@ class Heatpump extends Device {
         this.setStoreValue('measure_temperature', json.inne.now);
       })
       .catch((error) => {
-        this.log('Failed getting current temperature');
+        this.log('Failed getting current temperature', error);
       });
   }
 

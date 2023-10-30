@@ -14,6 +14,8 @@ class PanelOvenDevice extends Device {
   async onInit() {
     this.log('Panel Oven has been initialized');
 
+    await this.addCapability('meter_power.weekly');
+
     // Renew token on start
     this.renewToken((newToken) => {
       this.token = newToken;
@@ -65,7 +67,8 @@ class PanelOvenDevice extends Device {
     const roomId = 176401;
     let targetTemp;
     let measureTemp;
-    let meterPower;
+    let meterPower = 0;
+    let meterPowerWeekly = 0;
 
     // Fetch data (except energy)
     fetch('https://api-1.adax.no/client-api/rest/v1/content/?withEnergy=1', {
@@ -105,7 +108,9 @@ class PanelOvenDevice extends Device {
       .then((json) => {
         const now = new Date();
         const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
         const totalEnergy = json.points.reduce((accumulator, point) => {
+          meterPowerWeekly += point.energyWh / 1000;
           if (new Date(point.fromTime) >= startOfDay) {
             return accumulator + point.energyWh;
           }
@@ -113,7 +118,7 @@ class PanelOvenDevice extends Device {
         }, 0);
 
         meterPower = totalEnergy / 1000;
-        // this.log(`Total energy for this day: ${meterPower}kWh`);
+        this.log(`Total energy for this day: ${meterPower} kWh. For week: ${meterPowerWeekly} kWh}`);
       })
 
       // Set values
@@ -122,6 +127,7 @@ class PanelOvenDevice extends Device {
         this.setCapabilityValue('target_temperature', targetTemp);
         this.setCapabilityValue('measure_power', targetTemp > measureTemp === true ? 800 : 0);
         this.setCapabilityValue('meter_power', meterPower);
+        this.setCapabilityValue('meter_power.weekly', meterPowerWeekly);
         this.setAvailable();
       })
 
