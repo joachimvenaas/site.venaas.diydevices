@@ -82,7 +82,9 @@
         "target_temperature",
         "measure_temperature",
         "thermostat_mode",
-        "fan_speed"
+        "fan_speed",
+        "meter_power",
+        "measure_power"
       ],
       "capabilitiesOptions": {
         "thermostat_mode": {

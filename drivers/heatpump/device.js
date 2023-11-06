@@ -14,9 +14,10 @@ class Heatpump extends Device {
   async onInit() {
     this.log('Heatpump has been initialized');
 
-    /**
-    * Ta seg av kommandoer i fra Homey
-    */
+    // Register capabilities
+    await this.addCapability('meter_power');
+    await this.addCapability('measure_power');
+
     this.registerCapabilityListener('target_temperature', async (value) => {
       this.setStoreValue('target_temperature', value);
       this.sendCommand(this.getStoreValue('thermostat_mode'), this.getStoreValue('fan_speed'), value);
@@ -38,7 +39,9 @@ class Heatpump extends Device {
 
     // Read value from external source
     this.getTemp();
+    this.getPower();
     setInterval(() => this.getTemp(), 60000);
+    setInterval(() => this.getPower(), 5000);
   }
 
   /**
@@ -126,6 +129,49 @@ class Heatpump extends Device {
       })
       .catch((error) => {
         this.log('Failed getting current temperature', error);
+      });
+  }
+
+  /**
+   * Get power from shelly sensor
+   */
+  async getPower() {
+    // Break on off
+    if (this.getStoreValue('thermostat_mode') === 'off') {
+      return;
+    }
+
+    fetch('http://192.168.1.38/rpc/PM1.GetStatus?id=0')
+      .then((res) => res.json())
+      .then((json) => {
+        const current = json.aenergy.total || 0; // Wh
+        const currentW = Math.abs(json.apower) || 0; // W
+        const longterm = this.getStoreValue('longterm') || 0;
+        const previous = this.getStoreValue('previous_power') || current;
+        const change = current - previous;
+
+        if (change > 0) {
+          const totalWh = longterm + change;
+
+          // Oppdater verdier
+          this.log('incremented', change);
+          this.setStoreValue('longterm', totalWh);
+          this.setCapabilityValue('meter_power', totalWh / 1000);
+        }
+
+        // Sett nåværende til forrige verdi
+        this.setStoreValue('previous_power', current);
+
+        // Oppdater watt
+        this.setCapabilityValue('measure_power', currentW);
+
+        this.log('latest:', current, '- previous:', previous, '- longterm:', this.getStoreValue('longterm'));
+
+        this.unsetWarning();
+      })
+      .catch((err) => {
+        this.log(`Failed getting power ${err}`);
+        this.setWarning(`Failed getting power ${err}`);
       });
   }
 

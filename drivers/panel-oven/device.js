@@ -118,7 +118,7 @@ class PanelOvenDevice extends Device {
         }, 0);
 
         meterPower = totalEnergy / 1000;
-        this.log(`Total energy for this day: ${meterPower} kWh. For week: ${meterPowerWeekly} kWh}`);
+        // this.log(`Total energy for this day: ${meterPower} kWh. For week: ${meterPowerWeekly} kWh`);
       })
 
       // Set values
