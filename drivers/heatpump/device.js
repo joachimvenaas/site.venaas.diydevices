@@ -7,6 +7,8 @@ class Heatpump extends Device {
 
   address = this.getStoreValue('address');
   port = this.getStoreValue('port');
+  warning = false;
+  warning2 = false;
 
   /**
    * onInit is called when the device is initialized.
@@ -58,6 +60,8 @@ class Heatpump extends Device {
     let command = `${mode}_${fanspeed}_${temp}`;
     this.log('sending command', command);
 
+    this.warning = false;
+
     // Skruv av hvis thermostat mode = off
     if (mode === 'off' && this.getStoreValue('power') === true) {
       command = 'power_off';
@@ -66,8 +70,9 @@ class Heatpump extends Device {
         .then((res) => res.json())
         .then((json) => this.reportStatus(json, command, mode, fanspeed, temp))
         .catch((error) => {
-          this.log('Failed commanding AC unit', error);
-          this.setUnavailable('Did not recieve any response from AC');
+          this.log(`Failed commanding AC unit ${error}`);
+          this.setWarning(`Failed commanding AC unit ${error}`);
+          this.warning = true;
         });
 
     // Skru på hvis siste thermostat mode var off
@@ -75,22 +80,17 @@ class Heatpump extends Device {
       fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: '{ "command": "power_on" }' })
         .then((res) => res.json())
         .then((json) => {
-          this.log('Command sent:', 'power_on', 'message recieved:', json.status);
-
           // Vent 1 sek før videre kommandoer sendes
           setTimeout(() => {
             fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
               .then((res) => res.json())
-              .then((json) => this.reportStatus(json, command, mode, fanspeed, temp))
-              .catch((error) => {
-                this.log('Failed commanding AC unit', error);
-                this.setUnavailable('Did not recieve any response from AC');
-              });
+              .then((json) => this.reportStatus(json, command, mode, fanspeed, temp));
           }, 1000);
         })
         .catch((error) => {
-          this.log('Failed commanding AC unit', error);
-          this.setUnavailable('Did not recieve any response from AC');
+          this.log(`Failed commanding AC unit ${error}`);
+          this.setWarning(`Failed commanding AC unit ${error}`);
+          this.warning = true;
         });
       this.setStoreValue('power', true);
 
@@ -100,9 +100,14 @@ class Heatpump extends Device {
         .then((res) => res.json())
         .then((json) => this.reportStatus(json, command, mode, fanspeed, temp))
         .catch((error) => {
-          this.log('Failed commanding AC unit', error);
-          this.setUnavailable('Did not recieve any response from AC');
+          this.log(`Failed commanding AC unit ${error}`);
+          this.setWarning(`Failed commanding AC unit ${error}`);
+          this.warning = true;
         });
+    }
+
+    if (!this.warning) {
+      this.warning = false;
     }
   }
 
@@ -154,24 +159,24 @@ class Heatpump extends Device {
           const totalWh = longterm + change;
 
           // Oppdater verdier
-          this.log('incremented', change);
           this.setStoreValue('longterm', totalWh);
           this.setCapabilityValue('meter_power', totalWh / 1000);
         }
 
         // Sett nåværende til forrige verdi
         this.setStoreValue('previous_power', current);
-
         // Oppdater watt
         this.setCapabilityValue('measure_power', currentW);
 
-        this.log('latest:', current, '- previous:', previous, '- longterm:', this.getStoreValue('longterm'));
-
-        this.unsetWarning();
+        if (this.warning2) {
+          this.warning2 = false;
+          this.unsetWarning();
+        }
       })
       .catch((err) => {
         this.log(`Failed getting power ${err}`);
         this.setWarning(`Failed getting power ${err}`);
+        this.warning2 = true;
       });
   }
 
