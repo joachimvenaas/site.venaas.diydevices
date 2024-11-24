@@ -1,0 +1,22 @@
+[
+  {
+    "type": "group",
+    "label": { "en": "Data sources/controls" },
+    "children": [
+      {
+        "id": "host",
+        "type": "text",
+        "label": { "en": "PI IP/host" },
+        "value": "smarthome.home:8001",
+        "hint": { "en": "IP/hostname for the app" }
+      },
+      {
+        "id": "car_id",
+        "type": "text",
+        "label": { "en": "API token" },
+        "value": "12345",
+        "hint": { "en": "ID of car?" }
+      }
+    ]
+  }
+]

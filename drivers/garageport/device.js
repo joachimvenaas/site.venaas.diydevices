@@ -26,11 +26,15 @@ class Garageport extends Device {
     this.intervalManager(true);
   }
 
+  async onSettings({ oldSettings, newSettings, changedKeys }) {
+    this.log('Settings changed!', newSettings);
+  }
+
   /**
    * Read value from external source
    */
   async getStatus() {
-    fetch(`http://${this.address}:${this.port}/`, { method: 'GET' })
+    fetch(`http://${this.getSettings().host}/`, { method: 'GET' })
       .then((res) => res.json())
       .then((json) => {
         this.setAvailable(); // Mark device as available
@@ -71,7 +75,7 @@ class Garageport extends Device {
     this.getStatus(); // Gets current status
 
     if (this.status === 'open' || this.status === 'closed') {
-      fetch(`http://${this.address}:${this.port}/${command}`, { method: 'POST' })
+      fetch(`http://${this.getSettings().host}/${command}`, { method: 'POST' })
         .then((res) => res.json())
         .then((json) => {
           this.setAvailable(); // Mark device as available

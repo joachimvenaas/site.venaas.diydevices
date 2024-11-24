@@ -1,0 +1,29 @@
+[
+  {
+    "type": "group",
+    "label": { "en": "Data sources/controls" },
+    "children": [
+      {
+        "id": "host_pi",
+        "type": "text",
+        "label": { "en": "PI IP/host" },
+        "value": "10.0.0.1:3000",
+        "hint": { "en": "IP for the PI running the heatpump" }
+      },
+      {
+        "id": "host_netatmo",
+        "type": "text",
+        "label": { "en": "Netatmo data URL" },
+        "value": "10.0.10.103/netatmo.json",
+        "hint": { "en": "Link to netatmo JSON data" }
+      },
+      {
+        "id": "host_shelly",
+        "type": "text",
+        "label": { "en": "Shelly IP/host" },
+        "value": "10.0.20.139",
+        "hint": { "en": "IP/host for shelly" }
+      }
+    ]
+  }
+]

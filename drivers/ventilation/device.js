@@ -10,8 +10,6 @@ class VentilationDevice extends Device {
    */
   async onInit() {
     this.log('Ventilation Device has been initialized');
-    const address = this.getStoreValue('address');
-    const port = this.getStoreValue('port');
 
     this.registerCapabilityListener('ventilation_speed', async (value) => {
       this.sendCommand(value * 100);
@@ -21,7 +19,7 @@ class VentilationDevice extends Device {
      * Read value from external source
      */
     setInterval(() => {
-      fetch(`http://${address}:${port}/api`, { method: 'GET' })
+      fetch(`http://${this.getSettings().host}/api`, { method: 'GET' })
         .then((res) => res.json())
         .then((json) => {
           this.setAvailable();
@@ -35,11 +33,13 @@ class VentilationDevice extends Device {
     }, 1000);
   }
 
+  async onSettings({ oldSettings, newSettings, changedKeys }) {
+    this.log('Settings have been updated:', newSettings);
+  }
+
   async sendCommand(command) {
-    const address = this.getStoreValue('address');
-    const port = this.getStoreValue('port');
     this.log('command:', command);
-    fetch(`http://${address}:${port}/${command}`, { method: 'GET' })
+    fetch(`http://${this.getSettings().host}/${command}`, { method: 'GET' })
       .then((res) => res.text())
       .then((data) => {
         this.setAvailable();

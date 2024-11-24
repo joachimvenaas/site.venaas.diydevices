@@ -1,0 +1,15 @@
+[
+  {
+    "type": "group",
+    "label": { "en": "Data sources/controls" },
+    "children": [
+      {
+        "id": "host",
+        "type": "text",
+        "label": { "en": "PI IP/host" },
+        "value": "10.0.20.236:3000",
+        "hint": { "en": "IP or hostname for the PI running the controller" }
+      }
+    ]
+  }
+]

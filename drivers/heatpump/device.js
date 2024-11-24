@@ -46,6 +46,10 @@ class Heatpump extends Device {
     setInterval(() => this.getPower(), 5000);
   }
 
+  async onSettings({ oldSettings, newSettings, changedKeys }) {
+    this.log('Settings changed', newSettings);
+  }
+
   /**
    * Commands external source
    */
@@ -66,7 +70,7 @@ class Heatpump extends Device {
     if (mode === 'off' && this.getStoreValue('power') === true) {
       command = 'power_off';
       this.setStoreValue('power', false);
-      fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
+      fetch(`http://${this.getSettings().host_pi}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
         .then((res) => res.json())
         .then((json) => this.reportStatus(json, command, mode, fanspeed, temp))
         .catch((error) => {
@@ -77,12 +81,12 @@ class Heatpump extends Device {
 
     // Skru på hvis siste thermostat mode var off
     } else if (mode !== 'off' && this.getStoreValue('power') === false) {
-      fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: '{ "command": "power_on" }' })
+      fetch(`http://${this.getSettings().host_pi}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: '{ "command": "power_on" }' })
         .then((res) => res.json())
         .then((json) => {
           // Vent 1 sek før videre kommandoer sendes
           setTimeout(() => {
-            fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
+            fetch(`http://${this.getSettings().host_pi}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
               .then((res) => res.json())
               .then((json) => this.reportStatus(json, command, mode, fanspeed, temp));
           }, 1000);
@@ -96,7 +100,7 @@ class Heatpump extends Device {
 
     // Send kommando hvis den allerede er på
     } else if (mode !== 'off') {
-      fetch(`http://${this.address}:${this.port}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
+      fetch(`http://${this.getSettings().host_pi}/`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: `{ "command": "${command}" }` })
         .then((res) => res.json())
         .then((json) => this.reportStatus(json, command, mode, fanspeed, temp))
         .catch((error) => {
@@ -126,7 +130,7 @@ class Heatpump extends Device {
    * Read value from external source
    */
   async getTemp() {
-    fetch('http://192.168.1.104/netatmo.json', { method: 'GET' })
+    fetch(`http://${this.getSettings().host_netatmo}`, { method: 'GET' })
       .then((res) => res.json())
       .then((json) => {
         this.setCapabilityValue('measure_temperature', json.inne.now);
@@ -146,7 +150,7 @@ class Heatpump extends Device {
       return;
     }
 
-    fetch('http://192.168.1.38/rpc/PM1.GetStatus?id=0')
+    fetch(`http://${this.getSettings().host_shelly}/rpc/PM1.GetStatus?id=0`)
       .then((res) => res.json())
       .then((json) => {
         const current = json.aenergy.total || 0; // Wh

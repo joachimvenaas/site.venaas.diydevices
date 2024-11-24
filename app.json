@@ -71,7 +71,28 @@
           "template": "add_devices"
         }
       ],
-      "id": "garageport"
+      "id": "garageport",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Data sources/controls"
+          },
+          "children": [
+            {
+              "id": "host",
+              "type": "text",
+              "label": {
+                "en": "PI IP/host"
+              },
+              "value": "10.0.20.236:3000",
+              "hint": {
+                "en": "IP or hostname for the PI running the controller"
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "name": {
@@ -144,7 +165,50 @@
           "template": "add_devices"
         }
       ],
-      "id": "heatpump"
+      "id": "heatpump",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Data sources/controls"
+          },
+          "children": [
+            {
+              "id": "host_pi",
+              "type": "text",
+              "label": {
+                "en": "PI IP/host"
+              },
+              "value": "10.0.0.1:3000",
+              "hint": {
+                "en": "IP for the PI running the heatpump"
+              }
+            },
+            {
+              "id": "host_netatmo",
+              "type": "text",
+              "label": {
+                "en": "Netatmo data URL"
+              },
+              "value": "10.0.10.103/netatmo.json",
+              "hint": {
+                "en": "Link to netatmo JSON data"
+              }
+            },
+            {
+              "id": "host_shelly",
+              "type": "text",
+              "label": {
+                "en": "Shelly IP/host"
+              },
+              "value": "10.0.20.139",
+              "hint": {
+                "en": "IP/host for shelly"
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "name": {
@@ -225,7 +289,39 @@
           "template": "add_devices"
         }
       ],
-      "id": "magiccharger"
+      "id": "magiccharger",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Data sources/controls"
+          },
+          "children": [
+            {
+              "id": "host",
+              "type": "text",
+              "label": {
+                "en": "PI IP/host"
+              },
+              "value": "smarthome.home:8001",
+              "hint": {
+                "en": "IP/hostname for the app"
+              }
+            },
+            {
+              "id": "car_id",
+              "type": "text",
+              "label": {
+                "en": "API token"
+              },
+              "value": "930115100757641",
+              "hint": {
+                "en": "ID of car?"
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "name": {
@@ -333,7 +429,28 @@
           "template": "add_devices"
         }
       ],
-      "id": "ventilation"
+      "id": "ventilation",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Data sources/controls"
+          },
+          "children": [
+            {
+              "id": "host",
+              "type": "text",
+              "label": {
+                "en": "PI IP/host"
+              },
+              "value": "kinopi.home:3000",
+              "hint": {
+                "en": "IP or hostname for the PI running the controller"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "flow": {

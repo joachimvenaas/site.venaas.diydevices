@@ -28,21 +28,22 @@ class MagicChargerDevice extends Device {
     setInterval(() => this.fetchStatus(), 10000);
   }
 
+  async onSettings({ oldSettings, newSettings, changedKeys }) {
+    this.log('Settings changed', newSettings);
+  }
+
   /**
    * Fetch status from API
    */
   async fetchStatus() {
-    const url = this.getStoreValue('url');
-    const token = this.getStoreValue('token');
-
-    fetch(`${url}/status`, {
+    fetch(`http://${this.getSettings().host}/status`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token,
+        Authorization: `Bearer ${this.getSettings().car_id}`,
       },
     })
-      // Resuponse -> JSON
+      // Response -> JSON
       .then((res) => res.json())
 
       // JSON -> Homey
@@ -85,16 +86,12 @@ class MagicChargerDevice extends Device {
    * @param {string} value Command to send to API
    */
   async runCommand(value) {
-    // Grab settings from store
-    const url = this.getStoreValue('url');
-    const token = this.getStoreValue('token');
-
     // Send command to API
-    fetch(`${url}/${value ? 'start' : 'stop'}`, {
+    fetch(`http://${this.getSettings().host}/${value ? 'start' : 'stop'}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token,
+        Authorization: `Bearer ${this.getSettings().car_id}`,
       },
     })
       // Resuponse -> JSON
